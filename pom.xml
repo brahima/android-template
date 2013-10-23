@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>fr.leroymerlin.android</groupId>
+	<artifactId>androidapp-android</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>apk</packaging>
+	<name>ShoppingReporting</name>
+
+	<!-- <parent> <groupId>fr.leroymerlin.marcopolo.pom</groupId> <artifactId>parent.lmfrv3</artifactId> 
+		<version>3.4.17</version> </parent> -->
+
+	<scm>
+		<connection>scm:svn:http://svn/svn/lmfr/lmfrMobile/projects/lmfrMobile-app</connection>
+		<developerConnection>scm:svn:http://svn/svn/lmfr/lmfrMobile/projects/lmfrMobile-app</developerConnection>
+		<url>http://svn/svn/lmfr/lmfrMobile/projects/lmfrMobile-app</url>
+	</scm>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<!-- Plugins -->
+		<android-maven-plugin.version>3.6.1</android-maven-plugin.version>
+		<maven-compiler-plugin.version>2.3.2</maven-compiler-plugin.version>
+		<maven-resources-plugin.version>2.6</maven-resources-plugin.version>
+		<api.platform>17</api.platform>
+
+		<!-- Dependencies -->
+		<android.version>4.1.1.4</android.version>
+		<spring-android-rest-template.version>1.0.1.RELEASE</spring-android-rest-template.version>
+		<jackson.version>1.8.2</jackson.version>
+		<steema.teechart.version>3.2013.0517</steema.teechart.version>
+		<universImageLoader.version>1.8.6</universImageLoader.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.google.android</groupId>
+			<artifactId>android</artifactId>
+			<scope>provided</scope>
+			<version>${android.version}</version>
+		</dependency>
+		<!-- RetroCompatibilité de certains composants -->
+		<dependency>
+			<groupId>com.google.android</groupId>
+			<artifactId>support-v4</artifactId>
+			<version>r6</version>
+		</dependency>
+		<!-- Chargement des images 
+		<dependency>
+			<groupId>com.nostra13.universalimageloader</groupId>
+			<artifactId>universal-image-loader</artifactId>
+			<version>${universImageLoader.version}</version>
+		</dependency> -->
+
+		<!-- Lecture des flux jSon -->
+		<!-- Jackson JSON Mapper -->
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-core-asl</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<!-- Librairie graphique -->
+		<dependency>
+			<groupId>com.steema.teechart</groupId>
+			<artifactId>teechart</artifactId>
+			<version>${steema.teechart.version}</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+				<artifactId>android-maven-plugin</artifactId>
+				<version>${android-maven-plugin.version}</version>
+				<extensions>true</extensions>
+				<configuration>
+					<sdk>
+						<platform>${api.platform}</platform>
+					</sdk>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<profiles>
+		<profile>
+			<id>update-version-code</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+				<property>
+					<name>env.JOB_NAME</name>
+					<value>androidapp</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-resources-plugin</artifactId>
+						<version>${maven-resources-plugin.version}</version>
+						<executions>
+							<execution>
+								<id>copy-manifest</id>
+								<phase>initialize</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${project.build.directory}</outputDirectory>
+									<resources>
+										<resource>
+											<directory>${project.basedir}</directory>
+											<includes>
+												<include>AndroidManifest.xml</include>
+											</includes>
+										</resource>
+									</resources>
+									<overwrite>true</overwrite>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+						<artifactId>android-maven-plugin</artifactId>
+						<configuration>
+							<androidManifestFile>${project.build.directory}/AndroidManifest.xml</androidManifestFile>
+							<manifest>
+								<versionName>${project.version}-${env.BUILD_ID}</versionName>
+								<versionCode>${env.BUILD_NUMBER}</versionCode>
+							</manifest>
+							<mergeManifests>true</mergeManifests>
+						</configuration>
+						<executions>
+							<execution>
+								<id>update-manifest</id>
+								<phase>initialize</phase>
+								<goals>
+									<goal>manifest-update</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+</project>
